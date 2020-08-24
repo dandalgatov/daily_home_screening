@@ -12,8 +12,8 @@ function App() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    title: '',
-    otherTitle: '',
+    role: '',
+    otherRole: '',
     group: '',
     date: '',
     symptoms: [],
@@ -37,7 +37,7 @@ function App() {
 
 
 
-  const titleOptions = [
+  const roleOptions = [
     { key: 's', text: 'Student', value: 'student' },
     { key: 't', text: 'Teacher', value: 'teacher' },
     { key: 'a', text: 'Assistant', value: 'assistant' },
@@ -79,14 +79,14 @@ function App() {
             name='lastName'
             onChange={handleChange} />
           <Form.Select fluid required
-            label='Title'
-            placeholder='Title'
-            name='title'
-            options={titleOptions}
+            label='Roles'
+            placeholder='Roles'
+            name='role'
+            options={roleOptions}
             onChange={handleChange}
           />
         </Form.Group>
-        {formData.title === 'other' ? <Form.Input fluid required label='Other:' placeholder='Other:' /> : ''}
+        {formData.role === 'other' ? <Form.Input fluid required label='Other:' placeholder='Other:' /> : ''}
         
         
         
