@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import sgMail from '@sendgrid/mail'
 import SemanticDatepicker from 'react-semantic-ui-datepickers';
 import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import {
@@ -8,6 +9,27 @@ import {
 } from 'semantic-ui-react'
 
 function App() {
+
+
+  const submitForm = () => {
+    sgMail.setApiKey('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');
+    const msg = {
+      to: 'dandalgatov@gmail.com',
+      from: 'dandalgatov@gmail.com',
+      subject: 'Sending with Twilio SendGrid is Fun',
+      text: 'and easy to do anywhere, even with Node.js',
+      html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+      headers: {
+        'Content-Type': 'application/json' , 
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+        'Access-Control-Allow-Headers':'X-Requested-With'   
+      }
+    }
+    sgMail.send(msg);
+
+  }
+
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -19,19 +41,19 @@ function App() {
     symptoms: [],
     exposures: [],
   })
-  
+
 
   const handleChange = (e, data) => {
     setFormData({
-        ...formData,
-        [data.name]: data.value
+      ...formData,
+      [data.name]: data.value
     })
   }
 
   const handleCheckbox = (e, data) => {
     setFormData({
-        ...formData,
-        [data.name]: [...formData[data.name], data.value]
+      ...formData,
+      [data.name]: [...formData[data.name], data.value]
     })
   }
 
@@ -60,7 +82,7 @@ function App() {
 
   return (
     <Container>
-      <img src='/logoRCSeng.svg' alt="" style={{height: '10vh'}}/>
+      <img src='/logoRCSeng.svg' alt="" style={{ height: '10vh' }} />
       <h2>
         Parents: Please complete this short form each morning and report your child’s information in the morning before your child leaves for school.
       </h2>
@@ -79,21 +101,21 @@ function App() {
             name='lastName'
             onChange={handleChange} />
           <Form.Select fluid required
-            label='Roles'
-            placeholder='Roles'
+            label='Role'
+            placeholder='Role'
             name='role'
             options={roleOptions}
             onChange={handleChange}
           />
         </Form.Group>
         {formData.role === 'other' ? <Form.Input fluid required label='Other:' placeholder='Other:' /> : ''}
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
         <Form.Group widths='equal'>
           <Form.Select fluid required
             label='Group'
@@ -120,7 +142,7 @@ function App() {
         <p>If your child has any of the following symptoms, that indicates a possible illness that may decrease the student’s ability to learn and also put them at risk for spreading illness to others. Please check your child for these symptoms:</p>
 
         <Form.Group grouped>
-          
+
 
           <Form.Field control={Checkbox}
             label='Temperature 100.4 degrees Fahrenheit or higher when taken by mouth'
@@ -179,11 +201,12 @@ function App() {
 
 
 
-        <Form.Button color='green' 
-        
-        
-        
-        >Submit</Form.Button>
+        <Form.Button color='green'
+          onClick={submitForm}
+
+        >
+          Submit
+        </Form.Button>
 
 
 
