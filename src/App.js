@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import SemanticDatepicker from 'react-semantic-ui-datepickers';
 import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import {
-  Button,
   Form,
   Container,
   Checkbox
@@ -23,7 +22,6 @@ function App() {
   
 
   const handleChange = (e, data) => {
-    console.log(data)
     setFormData({
         ...formData,
         [data.name]: data.value
@@ -33,12 +31,11 @@ function App() {
   const handleCheckbox = (e, data) => {
     setFormData({
         ...formData,
-        [data.name]: [... formData[data.name], data.value]
+        [data.name]: [...formData[data.name], data.value]
     })
   }
 
 
-  console.log(new Date().toISOString().slice(0,10))
 
   const titleOptions = [
     { key: 's', text: 'Student', value: 'student' },
@@ -58,15 +55,6 @@ function App() {
     { key: 'pf', text: 'Petsoni/Findusi', value: 'Petsoni/Findusi' },
   ]
 
-  const symptopmOptions = [
-    { key: 'si', text: 'Oduvanchiki', value: 'Oduvanchiki' },
-    { key: 'vp', text: 'Vinni-Pukhi', value: 'Vinni-Pukhi' },
-    { key: '145', text: 'JLP 145', value: 'JLP145' },
-    { key: 'jlp', text: 'JLP', value: 'JLP' },
-    { key: 'mb', text: 'Matroskiny/Barboskini', value: 'Matroskiny/Barboskini' },
-    { key: 'ms', text: 'Mummi/Snusmumriki', value: 'Mummi/Snusmumriki' },
-    { key: 'pf', text: 'Petsoni/Findusi', value: 'Petsoni/Findusi' },
-  ]
 
 
 
@@ -117,7 +105,9 @@ function App() {
           <SemanticDatepicker fluid required
             label='Date'
             name='date'
-            onChange={handleChange} />
+            onChange={handleChange}
+            value={formData.date ? formData.date : new Date()}
+          />
         </Form.Group>
 
 
