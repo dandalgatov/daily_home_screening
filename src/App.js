@@ -1,14 +1,9 @@
-import React, { Component, useState } from 'react'
+import React, { useState } from 'react'
 import SemanticDatepicker from 'react-semantic-ui-datepickers';
 import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
 import {
   Button,
-  Checkbox,
   Form,
-  Input,
-  Radio,
-  Select,
-  TextArea,
   Container
 } from 'semantic-ui-react'
 
@@ -33,8 +28,6 @@ function App() {
     })
   }
 
-  const [currentDate, setNewDate] = useState(null);
-  const onChange = (event, data) => setNewDate(data.value);
 
   const titleOptions = [
     { key: 's', text: 'Student', value: 'student' },
