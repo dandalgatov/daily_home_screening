@@ -11,7 +11,7 @@ function App() {
 
 
   const submitForm = () => {
-    axios.post('http://localhost:8080/send', formData)
+    axios.post('https://rocky-falls-55370.herokuapp.com/send', formData)
     setFormSubmitted(true)
 
     // { // heroku-app.com/send
@@ -88,9 +88,7 @@ function App() {
   return (
     <Container>
       <img src='/logoRCSeng.svg' alt="" style={{ width: '50%' }} />
-      {formSubmitted ?
-        <h2>Thank you for submitting your daily screening form.</h2> :
-        <>
+    
         <h2>
           {`Daily Health Check Questionnaire - ${formData.date}`}<br />
           <i>Please complete every morning or afternoon before departing for the studio</i>
@@ -239,8 +237,10 @@ function App() {
           />
 
 
-        </Form>
-      </>}
+      </Form>
+      {formSubmitted ?
+        <h2>Thank you for submitting the formData</h2> : ''}
+
     </Container>
   );
 }
