@@ -3,8 +3,7 @@ import axios from 'axios'
 import {
   Form,
   Container,
-  Checkbox,
-  Input
+  Checkbox
 } from 'semantic-ui-react'
 
 function App() {
@@ -13,12 +12,6 @@ function App() {
   const submitForm = () => {
     axios.post('https://rocky-falls-55370.herokuapp.com/send', formData)
     setFormSubmitted(true)
-
-    // { // heroku-app.com/send
-    // headers: {
-    //   'Access-Control-Allow-Origin': '*',
-    // }
-    // }
 
   }
 
