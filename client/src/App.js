@@ -10,8 +10,11 @@ function App() {
 
 
   const submitForm = () => {
-    axios.post('https://rocky-falls-55370.herokuapp.com/send', formData)
+    if (formData.firstName && formData.lastName && formData.role && formData.phoneNumber) {
+      axios.post('https://rocky-falls-55370.herokuapp.com/send', formData)
     setFormSubmitted(true)
+    }
+    
 
   }
 
