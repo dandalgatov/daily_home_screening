@@ -3,7 +3,8 @@ import axios from 'axios'
 import {
   Form,
   Container,
-  Checkbox
+  Checkbox,
+  Modal
 } from 'semantic-ui-react'
 
 function App() {
@@ -225,17 +226,21 @@ function App() {
 
 
 
-
           <Form.Button
             color='green'
             onClick={submitForm}
             content='Submit'
           />
+          
+          <Modal
+          open={formSubmitted}
+        header='Thank you'
+        content='Your response has been sent.'
+      /> 
 
 
       </Form>
-      {formSubmitted ?
-        <h2>Thank you for submitting the formData</h2> : ''}
+      
 
     </Container>
   );
