@@ -4,6 +4,8 @@ const bodyParser = require('body-parser')
 const path = require('path')
 const app = express()
 const sgMail = require('@sendgrid/mail')
+const dotenv = require('dotenv')
+dotenv.load()
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -21,6 +23,7 @@ app.post('/send', function (req, res) {
 
   try {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    console.log(process.env.SENDGRID_API_KEY)
     const msg = {
       to: 'rcs.covid.daily@gmail.com',
       from: 'rcs.covid.daily@gmail.com',
