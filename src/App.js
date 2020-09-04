@@ -1,45 +1,50 @@
 import React, { useState } from 'react'
-import sgMail from '@sendgrid/mail'
-import SemanticDatepicker from 'react-semantic-ui-datepickers';
-import 'react-semantic-ui-datepickers/dist/react-semantic-ui-datepickers.css';
+import axios from 'axios'
 import {
   Form,
   Container,
-  Checkbox
+  Checkbox,
+  Input
 } from 'semantic-ui-react'
 
 function App() {
 
 
   const submitForm = () => {
-    sgMail.setApiKey('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');
-    const msg = {
-      to: 'dandalgatov@gmail.com',
-      from: 'dandalgatov@gmail.com',
-      subject: 'Sending with Twilio SendGrid is Fun',
-      text: 'and easy to do anywhere, even with Node.js',
-      html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-      headers: {
-        'Content-Type': 'application/json' , 
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-        'Access-Control-Allow-Headers':'X-Requested-With'   
-      }
-    }
-    sgMail.send(msg);
+    axios.post('http://localhost:8080/send', formData)
+    setFormSubmitted(true)
+
+    // { // heroku-app.com/send
+    // headers: {
+    //   'Access-Control-Allow-Origin': '*',
+    // }
+    // }
 
   }
 
-
+  const [formSubmitted, setFormSubmitted] = useState(false)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     role: '',
     otherRole: '',
+    phoneNumber: '',
     group: '',
-    date: '',
-    symptoms: [],
-    exposures: [],
+    symptoms: {
+      highTemperature: false,
+      soreThroat: false,
+      uncontrolledCough: false,
+      diarrheaVomitingAbdominalPain: false,
+      headachesMuscleaches: false,
+      lossTasteSmell: false,
+    },
+    exposures: {
+      covidContact: false,
+      exposureCovidArea: false,
+      communityTransmission: false,
+    },
+    date: new Date().toLocaleDateString(),
+    signature: '',
   })
 
 
@@ -51,10 +56,9 @@ function App() {
   }
 
   const handleCheckbox = (e, data) => {
-    setFormData({
-      ...formData,
-      [data.name]: [...formData[data.name], data.value]
-    })
+    const currentValue = formData[data.name][data.value]
+    formData[data.name][data.value] = !currentValue
+    setFormData({ ...formData })
   }
 
 
@@ -68,13 +72,14 @@ function App() {
   ]
 
   const groupOptions = [
+    { key: 'sk', text: 'Solnyshki', value: 'Solnyshki' },
     { key: 'si', text: 'Oduvanchiki', value: 'Oduvanchiki' },
     { key: 'vp', text: 'Vinni-Pukhi', value: 'Vinni-Pukhi' },
     { key: '145', text: 'JLP 145', value: 'JLP145' },
     { key: 'jlp', text: 'JLP', value: 'JLP' },
-    { key: 'mb', text: 'Matroskiny/Barboskini', value: 'Matroskiny/Barboskini' },
-    { key: 'ms', text: 'Mummi/Snusmumriki', value: 'Mummi/Snusmumriki' },
-    { key: 'pf', text: 'Petsoni/Findusi', value: 'Petsoni/Findusi' },
+    { key: 'mb', text: 'Matroskiny/Barboskiny', value: 'Matroskiny/Barboskini' },
+    { key: 'ms', text: 'Moomintrolli/Snusmumriki', value: 'Mummi/Snusmumriki' },
+    { key: 'pf', text: 'Petsony/Findusy', value: 'Petsoni/Findusi' },
   ]
 
 
@@ -82,135 +87,160 @@ function App() {
 
   return (
     <Container>
-      <img src='/logoRCSeng.svg' alt="" style={{ height: '10vh' }} />
-      <h2>
-        Parents: Please complete this short form each morning and report your child’s information in the morning before your child leaves for school.
-      </h2>
+      <img src='/logoRCSeng.svg' alt="" style={{ width: '50%' }} />
+      {formSubmitted ?
+        <h2>Thank you for submitting your daily screening form.</h2> :
+        <>
+        <h2>
+          {`Daily Health Check Questionnaire - ${formData.date}`}<br />
+          <i>Please complete every morning or afternoon before departing for the studio</i>
+        </h2>
 
-      <Form>
+        <Form>
 
-        <Form.Group widths='equal'>
+          <Form.Group widths='equal'>
+            <Form.Input fluid required
+              // error={true}
+              label='First name'
+              placeholder='First name'
+              name='firstName'
+              onChange={handleChange} />
+            <Form.Input fluid required
+              label='Last name'
+              placeholder='Last name'
+              name='lastName'
+              onChange={handleChange} />
+            <Form.Select fluid required
+              label='Role'
+              placeholder='Role'
+              name='role'
+              options={roleOptions}
+              onChange={handleChange}
+            />
+          </Form.Group>
+          {formData.role === 'other' ?
+            <Form.Input
+              fluid required
+              label='Other:'
+              placeholder='Please Specify'
+              name='otherRole'
+              onChange={handleChange}
+            /> : ''}
+
+          <Form.Group widths='equal'>
+            {formData.role === 'other' ?
+              <Form.Select fluid
+                label='Group'
+                placeholder='Group'
+                name='group'
+                options={groupOptions}
+                onChange={handleChange}
+              /> :
+              <Form.Select fluid required
+                label='Group'
+                placeholder='Group'
+                name='group'
+                options={groupOptions}
+                onChange={handleChange}
+              />}
+            <Form.Input fluid required
+              type='tel'
+              pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}'
+              label='Telephone Number (XXX-XXX-XXXX)'
+              placeholder='XXX-XXX-XXXX'
+              name='phoneNumber'
+              onChange={handleChange} />
+          </Form.Group>
+
+          <h3>SECTION 1: Symptoms</h3>
+          <p>Below is the list of COVD-19 symptoms as specified by the CDC.
+          Please check all that apply to you, if you are filling in the form for yourself,
+        or to your child.</p>
+          <Form.Group grouped>
+            <Form.Field control={Checkbox}
+              label='Temperature 100.0° F (37.7° C) or higher when taken by mouth'
+              name='symptoms'
+              value='highTemperature'
+              onChange={handleCheckbox}
+            />
+            <Form.Field control={Checkbox}
+              label='Sore throat'
+              name='symptoms'
+              value='soreThroat'
+              onChange={handleCheckbox}
+            />
+            <Form.Field control={Checkbox}
+              label='New uncontrolled cough that causes difficulty breathing (for students with chronic allergic/asthmatic cough, a change in their cough from baseline)'
+              name='symptoms'
+              value='uncontrolledCough'
+              onChange={handleCheckbox}
+            />
+            <Form.Field control={Checkbox}
+              label='Diarrhea, vomiting, or abdominal pain'
+              name='symptoms'
+              value='diarrheaVomitingAbdominalPain'
+              onChange={handleCheckbox}
+            />
+            <Form.Field control={Checkbox}
+              label='New onset of severe headaches, and muscle aches'
+              name='symptoms'
+              value='headachesMuscleaches'
+              onChange={handleCheckbox}
+            />
+            <Form.Field control={Checkbox}
+              label='New loss of taste or smell'
+              name='symptoms'
+              value='lossTasteSmell'
+              onChange={handleCheckbox}
+            />
+          </Form.Group>
+
+
+          <h3>SECTION 2: Close Contact/Potential Exposure</h3>
+          <p>Please check all that apply.</p>
+          <Form.Group grouped>
+            <Form.Field control={Checkbox}
+              label='You or your child had close contact (within 6 feet of an infected person for at least 15 minutes) with a person with confirmed COVID-19.'
+              name='exposures'
+              value='covidContact'
+              onChange={handleCheckbox}
+            />
+            <Form.Field control={Checkbox}
+              label='You or your child traveled to or lived in an area where the local, Tribal, territorial, or state health department is reporting large numbers of COVID-19 cases as described in the Community Mitigation Framework.'
+              name='exposures'
+              value='exposureCovidArea'
+              onChange={handleCheckbox}
+            />
+            <Form.Field control={Checkbox}
+              label='You or your child live in areas of high community transmission (as described in the Community Mitigation Framework) while the school remains open.'
+              name='exposures'
+              value='communityTransmission'
+              onChange={handleCheckbox}
+            />
+          </Form.Group>
+
+          <h3>Signature {formData.date}</h3>
           <Form.Input fluid required
-            label='First name'
-            placeholder='First name'
-            name='firstName'
+            label='I hereby confirm that all the information provided in this form is correct.'
+            placeholder='Please enter your full name'
+            name='signature'
             onChange={handleChange} />
-          <Form.Input fluid required
-            label='Last name'
-            placeholder='Last name'
-            name='lastName'
-            onChange={handleChange} />
-          <Form.Select fluid required
-            label='Role'
-            placeholder='Role'
-            name='role'
-            options={roleOptions}
-            onChange={handleChange}
+
+
+
+
+
+
+
+          <Form.Button
+            color='green'
+            onClick={submitForm}
+            content='Submit'
           />
-        </Form.Group>
-        {formData.role === 'other' ? <Form.Input fluid required label='Other:' placeholder='Other:' /> : ''}
 
 
-
-
-
-
-
-        <Form.Group widths='equal'>
-          <Form.Select fluid required
-            label='Group'
-            placeholder='Group'
-            name='group'
-            options={groupOptions}
-            onChange={handleChange}
-          />
-          <SemanticDatepicker fluid required
-            label='Date'
-            name='date'
-            onChange={handleChange}
-            value={formData.date ? formData.date : new Date()}
-          />
-        </Form.Group>
-
-
-
-
-
-
-
-        <h3>SECTION 1: Symptoms</h3>
-        <p>If your child has any of the following symptoms, that indicates a possible illness that may decrease the student’s ability to learn and also put them at risk for spreading illness to others. Please check your child for these symptoms:</p>
-
-        <Form.Group grouped>
-
-
-          <Form.Field control={Checkbox}
-            label='Temperature 100.4 degrees Fahrenheit or higher when taken by mouth'
-            name='symptoms'
-            value='High Temperature'
-            onChange={handleCheckbox}
-          />
-          <Form.Field control={Checkbox}
-            label='Sore throat'
-            name='symptoms'
-            value='Sore Throat'
-            onChange={handleCheckbox}
-          />
-          <Form.Field control={Checkbox}
-            label='New uncontrolled cough that causes difficulty breathing (for students with chronic allergic/asthmatic cough, a change in their cough from baseline)'
-            name='symptoms'
-            value='Uncontrolled Cough'
-            onChange={handleCheckbox}
-          />
-          <Form.Field control={Checkbox}
-            label='Diarrhea, vomiting, or abdominal pain'
-            name='symptoms'
-            value='Diarrhea, vomiting, or abdominal pain'
-            onChange={handleCheckbox}
-          />
-          <Form.Field control={Checkbox}
-            label='New onset of severe headache, especially with a fever'
-            name='symptoms'
-            value='Severe Headache'
-            onChange={handleCheckbox}
-          />
-        </Form.Group>
-
-        <h3>SECTION 2: Close Contact/Potential Exposure</h3>
-
-        <Form.Group grouped>
-          <Form.Field control={Checkbox}
-            label='Had close contact (within 6 feet of an infected person for at least 15 minutes) with a person with confirmed COVID-19'
-            name='exposures'
-            value='Close Contact with Confirmed Case of COVID-19'
-            onChange={handleCheckbox}
-          />
-          <Form.Field control={Checkbox}
-            label='Traveled to or lived in an area where the local, Tribal territorial, or state health department is reporting large numbers of COVID-19 cases as described in the Community Mitigation Framework'
-            name='exposures'
-            value='Traveled or Lived in the area with large number of COVID-19 cases'
-            onChange={handleCheckbox}
-          />
-          <Form.Field control={Checkbox}
-            label='Live in areas of high community transmission (as described in the Community Mitigation Framework) while the school remains open'
-            name='exposures'
-            value='Live in areas of high community transmission'
-            onChange={handleCheckbox}
-          />
-        </Form.Group>
-
-
-
-        <Form.Button color='green'
-          onClick={submitForm}
-
-        >
-          Submit
-        </Form.Button>
-
-
-
-      </Form>
+        </Form>
+      </>}
     </Container>
   );
 }
