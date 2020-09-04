@@ -21,7 +21,7 @@ app.post('/send', function (req, res) {
   
 
   try {
-    sgMail.setApiKey('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');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: 'rcs.covid.daily@gmail.com',
       from: 'rcs.covid.daily@gmail.com',
