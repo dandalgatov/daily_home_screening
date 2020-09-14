@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { useForm } from "react-hook-form";
-// import 'react-phone-input-2/lib/semantic-ui.css'
-// import PhoneInput from 'react-phone-input-2'
-// import InputMask from "react-input-mask";
 import MaskedInput from "react-input-mask";
 
-import { Form, Container, Checkbox, Modal, Button } from 'semantic-ui-react'
+import { Player } from '@lottiefiles/react-lottie-player';
+
+
+import { Header, Form, Container, Checkbox, Modal, Button, Icon } from 'semantic-ui-react'
 
 function App(props) {
-  //Hooks
-  const { register, handleSubmit, watch, errors } = useForm();
+
+
 
   //Data Section
+  const [validated, setValidated] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formData, setFormData] = useState({
     firstName: '',
@@ -38,6 +38,12 @@ function App(props) {
     signature: '',
   })
 
+  console.log(formData.phoneNumber[13])
+
+  const [errorPresent, setErrorPresent] = useState({
+
+  })
+
   const roleOptions = [
     { key: 's', text: 'Student', value: 'student' },
     { key: 't', text: 'Teacher', value: 'teacher' },
@@ -57,26 +63,18 @@ function App(props) {
     { key: 'pf', text: 'Petsony/Findusy', value: 'Petsoni/Findusi' },
   ]
 
-//Functionality Section
-  
+  //Functionality Section
+
   const handleChange = (e, data) => {
-    console.log(data)
+    console.log(data.name)
     setFormData({
       ...formData,
       [data.name]: data.value
     })
   }
 
-  const handlePhoneChange = (e, data) => {
-    // const value = e.target.value;
-    // console.log(value)
-    // console.log(data)
-    // console.log(e)
-    // setFormData({
-    //   ...formData,
-    //   [data.name]: data.value
-    // })
-  }
+  
+
 
   const handleCheckbox = (e, data) => {
     const currentValue = formData[data.name][data.value]
@@ -85,117 +83,97 @@ function App(props) {
   }
 
   const submitForm = () => {
-    if (formData.firstName && formData.lastName && formData.role && formData.phoneNumber) {
-      axios.post('https://rocky-falls-55370.herokuapp.com/send', formData)
-      setFormSubmitted(true)
-    }
+    
+    if (validated === true) { }
+
+
+    // if (formData.firstName && formData.lastName && formData.role && formData.phoneNumber) {
+    //   axios.post('https://rocky-falls-55370.herokuapp.com/send', formData)
+    //   setFormSubmitted(true)
+    // }
   }
 
-  const onSubmit = data => console.log(data);
+  // const onSubmit = data => console.log(data);
 
-//Page Render
+  const onClose = () => {
+    // window.opener = null;
+    window.open("", "_self");
+    window.close();
+  };
+
+
+  //Page Render
   return (
     <Container>
       {/* Title */}
       <img src='/logoRCSeng.svg' alt="" style={{ width: '50%' }} />
       <h2>{`Daily Health Check Questionnaire - ${formData.date}`}<br />
-      <i>Please complete every morning or afternoon before departing for the studio</i></h2>
+        <i>Please complete every morning or afternoon before departing for the studio</i></h2>
 
-      <Form>
+      <Form novalidate="novalidate">
         {/* 1st Row */}
-        <Form.Group widths='equal'>
+        <Form.Group widths='equal' id="form_start">
           <Form.Input fluid required
             label='First name'
             placeholder='First name'
             name='firstName'
-            onChange={handleChange} />
+            onChange={handleChange}
+            error={formData.firstName ? false : true}
+          />
+
           <Form.Input fluid required
             label='Last name'
             placeholder='Last name'
             name='lastName'
-            onChange={handleChange} />
+            onChange={handleChange}
+            error={formData.lastName ? false : true}
+          />
           <Form.Select fluid required
             label='Role'
             placeholder='Role'
             name='role'
             options={roleOptions}
             onChange={handleChange}
+            error={formData.role ? false : true}
           />
         </Form.Group>
-        {/* Optional "Other" section based on above "Role" selector */}
-        {formData.role === 'other' ?
-          <Form.Input
-            fluid required
-            label='Other:'
-            placeholder='Please Specify'
-            name='otherRole'
-            onChange={handleChange}
-          /> : ''
-        }
         {/* 2nd Row */}
-        <Form.Group widths='equal'>
-          {formData.role === 'other' ?
-            <Form.Select fluid
-              label='Group'
-              placeholder='Group'
-              name='group'
-              options={groupOptions}
-              onChange={handleChange}
-            /> :
-            <Form.Select fluid required
-              label='Group'
-              placeholder='Group'
-              name='group'
-              options={groupOptions}
-              onChange={handleChange}
-            />}
-          {/* <Form.Input as={InputMask}
-            fluid require
-            type='tel'
-            mask="999.999.999-99"
-            label='Telephone Number (XXX-XXX-XXXX)'
-            placeholder='XXX-XXX-XXXX'
-            name='phoneNumber'
-            onChange={handleChange} /> */}
-          {/* <Form.Field >
-            <MaskedInput
-              label='r'
-              mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
-              value={formData.phoneNumber}
-              onChange={handleChange}
-            />
-          </Form.Field> */}
-
-          {/* <Form.Input
-            fluid required
-            control={PhoneInput}
-            label='Telephone Number'
-            name='phoneNumber'
-            onChange={handleChange}
-
-          /> */}
-          <MaskedInput required
-            // value={formData.phoneNumber}
-            name="phoneNumber"
-            label='Phone Number'
-            // inputRef={register({
-            //   validate: {
-            //     inputTelRequired: isNotFilledTel
-            //   }
-            // })}
-            mask='(999) 999-9999'
-            // alwaysShowMask
-            placeholder='(999) 999-9999'
-            onChange={(e) => setFormData({
+        {formData.role === 'admin' ? '' : // If admin, no need for group or phone number
+          <Form.Group widths='equal'>
+            {formData.role === 'other' ? // If role is other, swap group input to otherRole input
+              <Form.Input
+                fluid required
+                label='Other:'
+                placeholder='Please Specify'
+                name='otherRole'
+                onChange={handleChange}
+                error={formData.otherRole ? false : true}
+              /> :
+              <Form.Select fluid required
+                label='Group'
+                placeholder='Group'
+                name='group'
+                value={formData.Group}
+                options={groupOptions}
+                onChange={handleChange}
+                error={formData.group ? false : true}
+              />
+            }
+            <MaskedInput required
+              name="phoneNumber"
+              label='Phone Number'
+              mask='(999) 999-9999'
+              placeholder='(999) 999-9999'
+              onChange={(e) => setFormData({
                 ...formData,
                 phoneNumber: e.target.value
               })}
-            // value={props.value}
-          >
-            <Form.Input type="tel" autoComplete="tel-national" />
-          </MaskedInput>
-        </Form.Group>
-
+              error={formData.phoneNumber && formData.phoneNumber[13] !== '_' ? false : true}
+            >
+              <Form.Input type="tel" autoComplete="tel-national" />
+            </MaskedInput>
+          </Form.Group>
+        }
         <h3>SECTION 1: Symptoms</h3>
         <p>Below is the list of COVD-19 symptoms as specified by the CDC.
         Please check all that apply to you, if you are filling in the form for yourself,
@@ -268,19 +246,35 @@ function App(props) {
           label='I hereby confirm that all the information provided in this form is correct.'
           placeholder='Please enter your full name'
           name='signature'
-          onChange={handleChange} />
+          onChange={handleChange}
+          error={formData.signature ? false : true}
+        />
 
         <Form.Button
           color='green'
           onClick={submitForm}
           content='Submit'
+          // label='* please fill out all the required fields '
+          error={{
+            content: 'Fill out all the required fields and try again.',
+            pointing: 'left',
+          }}
         />
-        <Modal
-          open={formSubmitted}
-          header='Thank you'
-          content='Your response has been sent.'
-          action={<Button color='black' >Test</Button>}
-        />
+        <Modal open={formSubmitted}>
+          <Header icon='checked calendar' content='Thak You!' />
+          <Modal.Content><p>
+            Your response has been sent. Would you like to fill out another one?
+          </p></Modal.Content>
+          <Modal.Actions>
+            <Button color='green' content='New Form' icon='undo'
+              onClick={() => {
+                window.location.reload(false)
+                window.scrollTo(0, 0)
+              }}
+            />
+
+          </Modal.Actions>
+        </Modal>
       </Form>
     </Container>
   );

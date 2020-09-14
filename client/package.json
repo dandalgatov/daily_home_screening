@@ -4,6 +4,7 @@
   "private": true,
   "proxy": "http://localhost:8080",
   "dependencies": {
+    "@lottiefiles/react-lottie-player": "^2.1.8",
     "@sendgrid/client": "^7.2.4",
     "@sendgrid/mail": "^7.2.5",
     "@testing-library/jest-dom": "^4.2.4",
@@ -16,7 +17,9 @@
     "react-dom": "^16.13.1",
     "react-hook-form": "^6.8.1",
     "react-input-mask": "^3.0.0-alpha.2",
+    "react-lottie": "^1.2.3",
     "react-phone-input-2": "^2.13.8",
+    "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "react-text-mask": "^5.4.3",
