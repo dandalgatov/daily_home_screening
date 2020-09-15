@@ -12,28 +12,52 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 app.post('/send', function (req, res) {
 
-  const { firstName, lastName, role, otherRole, phoneNumber, group, date, signature } = req.body
-  const { highTemperature, soreThroat, uncontrolledCough, diarrheaVomitingAbdominalPain, headachesMuscleaches, lossTasteSmell } = req.body.symptoms
-  const { covidContact, exposureCovidArea, communityTransmission } = req.body.exposures
-  const status = highTemperature || soreThroat || uncontrolledCough || diarrheaVomitingAbdominalPain || headachesMuscleaches || lossTasteSmell || covidContact || exposureCovidArea || communityTransmission ? 'NOT CLEAR' : 'CLEAR'
+  const {
+    firstName,
+    lastName,
+    role,
+    otherRole,
+    phoneNumber,
+    group,
+    date,
+    signature } = req.body
 
+  const {
+    highTemperature,
+    soreThroat,
+    uncontrolledCough,
+    diarrheaVomitingAbdominalPain,
+    headachesMuscleaches,
+    lossTasteSmell,
+    covidContact,
+    exposureCovidArea,
+    communityTransmission } = req.body.flags
 
-  
+  const status =
+    highTemperature ||
+    soreThroat ||
+    uncontrolledCough ||
+    diarrheaVomitingAbdominalPain ||
+    headachesMuscleaches ||
+    lossTasteSmell ||
+    covidContact ||
+    exposureCovidArea ||
+    communityTransmission ? 'NOT CLEAR' : 'CLEAR'
 
   try {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey('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');
     const msg = {
       to: 'rcs.covid.daily@gmail.com',
       from: 'rcs.covid.daily@gmail.com',
-      subject: `${group} / ${date} / ${firstName} ${lastName} / ${status}`,
+      subject: `${group.value} / ${date} / ${firstName.value} ${lastName.value} / ${status}`,
       text:
         `
-        GROUP: ${group} \r
+        GROUP: ${group.value} \r
         DATE: ${date} \r
-        NAME: ${firstName} ${lastName} \r
-        ROLE: ${role === 'other'? otherRole : role} \r
+        NAME: ${firstName.value} ${lastName.value} \r
+        ROLE: ${role.value === 'other' ? otherRole.value : role.value} \r
         STATUS: ${status} \r
-        TELEPHONE NUMBER: ${phoneNumber}
+        TELEPHONE NUMBER: ${phoneNumber.value}
         \r\n
         High Temperature: ${highTemperature} \r
         Sore Throat: ${soreThroat} \r
@@ -41,15 +65,12 @@ app.post('/send', function (req, res) {
         Diarrhea, vomiting, or abdominal pain: ${diarrheaVomitingAbdominalPain} \r
         Severe Headache: ${headachesMuscleaches} \r
         Loss of Taste or Smell: ${lossTasteSmell} \r
-        \r\n
         Close Contact with Confirmed Case of COVID-19: ${covidContact} \r
         Traveled or Lived in the area with a large number of COVID-19 cases: ${exposureCovidArea} \r
         Live in areas of high community transmission: ${communityTransmission} \r
         \r\n
-        SIGNATURE: ${signature}
-        
+        SIGNATURE: ${signature.value}
         `,
-      // html: '<strong>and easy to do anywhere, even with Node.js</strong>',
     }
     sgMail.send(msg);
     return res.send('sending');
