@@ -83,7 +83,7 @@ function App(props) {
     } else {
       if (name === 'phoneNumber' && value[13] === '_' ) {
         invalidValue = true
-      } else (value.length < 1){
+      } else if (value.length < 1){
         invalidValue = true
       }
       setFormData({
