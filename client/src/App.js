@@ -81,10 +81,11 @@ function App(props) {
       formDataCopy.flags[value] = !formDataCopy.flags[value]
       setFormData(formDataCopy)
     } else {
-      if (name === 'phoneNumber'
-        && value[13] === '_'
-        || value.length < 1
-      ) invalidValue = true
+      if (name === 'phoneNumber' && value[13] === '_' ) {
+        invalidValue = true
+      } else (value.length < 1){
+        invalidValue = true
+      }
       setFormData({
         ...formData,
         [name]: {
