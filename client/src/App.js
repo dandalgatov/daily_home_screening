@@ -1,49 +1,57 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import MaskedInput from "react-input-mask";
-
-import { Player } from '@lottiefiles/react-lottie-player';
-
-
-import { Header, Form, Container, Checkbox, Modal, Button, Icon } from 'semantic-ui-react'
+import { Header, Form, Container, Checkbox, Modal, Button } from 'semantic-ui-react'
 
 function App(props) {
 
-
-
-  //Data Section
-  const [validated, setValidated] = useState(false)
+  //Hooks
+  const [formError, setFormError] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    role: '',
-    otherRole: '',
-    group: '',
-    phoneNumber: '',
-    symptoms: {
+    firstName: {
+      value: '',
+      error: false,
+    },
+    lastName: {
+      value: '',
+      error: false,
+    },
+    role: {
+      value: '',
+      error: false,
+    },
+    otherRole: {
+      value: '',
+      error: false,
+    },
+    group: {
+      value: '',
+      error: false,
+    },
+    phoneNumber: {
+      value: '',
+      error: false,
+    },
+    signature: {
+      value: '',
+      error: false,
+    },
+    date: new Date().toLocaleDateString(),
+    flags: {
       highTemperature: false,
       soreThroat: false,
       uncontrolledCough: false,
       diarrheaVomitingAbdominalPain: false,
       headachesMuscleaches: false,
       lossTasteSmell: false,
-    },
-    exposures: {
       covidContact: false,
       exposureCovidArea: false,
       communityTransmission: false,
     },
-    date: new Date().toLocaleDateString(),
-    signature: '',
   })
 
-  console.log(formData.phoneNumber[13])
-
-  const [errorPresent, setErrorPresent] = useState({
-
-  })
-
+  //Dropdown Options
   const roleOptions = [
     { key: 's', text: 'Student', value: 'student' },
     { key: 't', text: 'Teacher', value: 'teacher' },
@@ -63,43 +71,63 @@ function App(props) {
     { key: 'pf', text: 'Petsony/Findusy', value: 'Petsoni/Findusi' },
   ]
 
-  //Functionality Section
+  //Functionality 
 
   const handleChange = (e, data) => {
-    console.log(data.name)
-    setFormData({
-      ...formData,
-      [data.name]: data.value
-    })
+    const { name, value } = data || e.target
+    let invalidValue = false
+    if (name === 'flags') {
+      const formDataCopy = { ...formData }
+      formDataCopy.flags[value] = !formDataCopy.flags[value]
+      setFormData(formDataCopy)
+    } else {
+      if (name === 'phoneNumber'
+        && value[13] === '_'
+        || value.length < 1
+      ) invalidValue = true
+      setFormData({
+        ...formData,
+        [name]: {
+          value: value,
+          error: invalidValue,
+        }
+      })
+    }
   }
 
-  
-
-
-  const handleCheckbox = (e, data) => {
-    const currentValue = formData[data.name][data.value]
-    formData[data.name][data.value] = !currentValue
-    setFormData({ ...formData })
-  }
 
   const submitForm = () => {
-    
-    if (validated === true) { }
 
+    const formDataCopy = { ...formData }
+    const { firstName, lastName, role, otherRole, group, phoneNumber, signature } = formDataCopy
+    const admin = formDataCopy.role.value === 'admin'
+    const other = formDataCopy.role.value === 'other'
 
-    // if (formData.firstName && formData.lastName && formData.role && formData.phoneNumber) {
-    //   axios.post('https://rocky-falls-55370.herokuapp.com/send', formData)
-    //   setFormSubmitted(true)
-    // }
+    if (!firstName.value) formDataCopy.firstName.error = true
+    if (!lastName.value) formDataCopy.lastName.error = true
+    if (!role.value) formDataCopy.role.error = true
+    if (!other) { formDataCopy.otherRole.error = false }
+    else if (!otherRole.value) { formDataCopy.otherRole.error = true }
+    if (other || admin) { formDataCopy.group.error = false }
+    else if (group.value === '') { formDataCopy.group.error = true }
+    if (admin) { formDataCopy.phoneNumber.error = false }
+    else if (!phoneNumber.value) { formDataCopy.phoneNumber.error = true }
+    if (!signature.value) formDataCopy.signature.error = true
+    setFormData(formDataCopy)
+
+    if (!firstName.error
+      && !lastName.error
+      && !role.error
+      && !otherRole.error
+      && !group.error
+      && !phoneNumber.error
+      && !signature.error) {
+      console.log(formDataCopy)
+      axios.post('https://rocky-falls-55370.herokuapp.com/send', formDataCopy)
+      setFormError(false)
+      setFormSubmitted(true)
+    } else  setFormError(true) 
   }
-
-  // const onSubmit = data => console.log(data);
-
-  const onClose = () => {
-    // window.opener = null;
-    window.open("", "_self");
-    window.close();
-  };
 
 
   //Page Render
@@ -110,7 +138,8 @@ function App(props) {
       <h2>{`Daily Health Check Questionnaire - ${formData.date}`}<br />
         <i>Please complete every morning or afternoon before departing for the studio</i></h2>
 
-      <Form novalidate="novalidate">
+      <Form noValidate="novalidate">
+
         {/* 1st Row */}
         <Form.Group widths='equal' id="form_start">
           <Form.Input fluid required
@@ -118,15 +147,14 @@ function App(props) {
             placeholder='First name'
             name='firstName'
             onChange={handleChange}
-            error={formData.firstName ? false : true}
+            error={formData.firstName.error ? true : false}
           />
-
           <Form.Input fluid required
             label='Last name'
             placeholder='Last name'
             name='lastName'
             onChange={handleChange}
-            error={formData.lastName ? false : true}
+            error={formData.lastName.error ? true : false}
           />
           <Form.Select fluid required
             label='Role'
@@ -134,20 +162,21 @@ function App(props) {
             name='role'
             options={roleOptions}
             onChange={handleChange}
-            error={formData.role ? false : true}
+            error={formData.role.error ? true : false}
           />
         </Form.Group>
+
         {/* 2nd Row */}
-        {formData.role === 'admin' ? '' : // If admin, no need for group or phone number
+        {formData.role.value === 'admin' ? '' : // If admin, no need for group or phone number
           <Form.Group widths='equal'>
-            {formData.role === 'other' ? // If role is other, swap group input to otherRole input
+            {formData.role.value === 'other' ? // If role is other, swap group input to otherRole input
               <Form.Input
                 fluid required
                 label='Other:'
                 placeholder='Please Specify'
                 name='otherRole'
                 onChange={handleChange}
-                error={formData.otherRole ? false : true}
+                error={formData.otherRole.error ? true : false}
               /> :
               <Form.Select fluid required
                 label='Group'
@@ -156,7 +185,7 @@ function App(props) {
                 value={formData.Group}
                 options={groupOptions}
                 onChange={handleChange}
-                error={formData.group ? false : true}
+                error={formData.group.error ? true : false}
               />
             }
             <MaskedInput required
@@ -164,16 +193,14 @@ function App(props) {
               label='Phone Number'
               mask='(999) 999-9999'
               placeholder='(999) 999-9999'
-              onChange={(e) => setFormData({
-                ...formData,
-                phoneNumber: e.target.value
-              })}
-              error={formData.phoneNumber && formData.phoneNumber[13] !== '_' ? false : true}
+              onChange={handleChange}
+              error={formData.phoneNumber.error ? true : false}
             >
               <Form.Input type="tel" autoComplete="tel-national" />
             </MaskedInput>
           </Form.Group>
         }
+
         <h3>SECTION 1: Symptoms</h3>
         <p>Below is the list of COVD-19 symptoms as specified by the CDC.
         Please check all that apply to you, if you are filling in the form for yourself,
@@ -181,63 +208,62 @@ function App(props) {
         <Form.Group grouped>
           <Form.Field control={Checkbox}
             label='Temperature 100.0° F (37.7° C) or higher when taken by mouth'
-            name='symptoms'
+            name='flags'
             value='highTemperature'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
           <Form.Field control={Checkbox}
             label='Sore throat'
-            name='symptoms'
+            name='flags'
             value='soreThroat'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
           <Form.Field control={Checkbox}
             label='New uncontrolled cough that causes difficulty breathing (for students with chronic allergic/asthmatic cough, a change in their cough from baseline)'
-            name='symptoms'
+            name='flags'
             value='uncontrolledCough'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
           <Form.Field control={Checkbox}
             label='Diarrhea, vomiting, or abdominal pain'
-            name='symptoms'
+            name='flags'
             value='diarrheaVomitingAbdominalPain'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
           <Form.Field control={Checkbox}
             label='New onset of severe headaches, and muscle aches'
-            name='symptoms'
+            name='flags'
             value='headachesMuscleaches'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
           <Form.Field control={Checkbox}
             label='New loss of taste or smell'
-            name='symptoms'
+            name='flags'
             value='lossTasteSmell'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
         </Form.Group>
-
 
         <h3>SECTION 2: Close Contact/Potential Exposure</h3>
         <p>Please check all that apply.</p>
         <Form.Group grouped>
           <Form.Field control={Checkbox}
             label='You or your child had close contact (within 6 feet of an infected person for at least 15 minutes) with a person with confirmed COVID-19.'
-            name='exposures'
+            name='flags'
             value='covidContact'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
           <Form.Field control={Checkbox}
             label='You or your child traveled to or lived in an area where the local, Tribal, territorial, or state health department is reporting large numbers of COVID-19 cases as described in the Community Mitigation Framework.'
-            name='exposures'
+            name='flags'
             value='exposureCovidArea'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
           <Form.Field control={Checkbox}
             label='You or your child live in areas of high community transmission (as described in the Community Mitigation Framework) while the school remains open.'
-            name='exposures'
+            name='flags'
             value='communityTransmission'
-            onChange={handleCheckbox}
+            onChange={handleChange}
           />
         </Form.Group>
 
@@ -247,18 +273,17 @@ function App(props) {
           placeholder='Please enter your full name'
           name='signature'
           onChange={handleChange}
-          error={formData.signature ? false : true}
+          error={formData.signature.error ? true : false}
         />
 
         <Form.Button
           color='green'
           onClick={submitForm}
           content='Submit'
-          // label='* please fill out all the required fields '
-          error={{
+          error={formError ? {
             content: 'Fill out all the required fields and try again.',
             pointing: 'left',
-          }}
+          } : false }
         />
         <Modal open={formSubmitted}>
           <Header icon='checked calendar' content='Thak You!' />
@@ -272,12 +297,10 @@ function App(props) {
                 window.scrollTo(0, 0)
               }}
             />
-
           </Modal.Actions>
         </Modal>
       </Form>
     </Container>
   );
 }
-
 export default App;
