@@ -287,7 +287,7 @@ function App(props) {
           } : false }
         />
         <Modal open={formSubmitted}>
-          <Header icon='checked calendar' content='Thak You!' />
+          <Header icon='checked calendar' content='Thank You!' />
           <Modal.Content><p>
             Your response has been sent. Would you like to fill out another one?
           </p></Modal.Content>
