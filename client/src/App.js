@@ -52,18 +52,18 @@ function App(props) {
 
 
 
-  const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1I_VgOZsdk0JbFIP6G7MKGU0GWnn2yYEVVZzaUZmQ4qRjcQ/formResponse'
+  // const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1I_VgOZsdk0JbFIP6G7MKGU0GWnn2yYEVVZzaUZmQ4qRjcQ/formResponse'
 
-  const GF_FIRST_NAME = 'entry.1110557098'
-  const GF_LAST_NAME = 'entry.1857082831'
-  const GF_PHONE_NUMBER = 'entry.1397485794'
-  const GF_SIGNATURE = 'entry.2083580280'
-  const GF_ROLE = 'entry.1542846730'
-  const GF_ROLE_OTHER = 'entry.1542846730.other_option_response'
-  const GF_GROUP = 'entry.406890529'
-  const GF_GROUP_OTHER = 'entry.406890529.other_option_response'
-  const GF_SYMPTOMS = 'entry.1254420812'
-  const GF_EXPOSURES = 'entry.1995875531'
+  // const GF_FIRST_NAME = 'entry.1110557098'
+  // const GF_LAST_NAME = 'entry.1857082831'
+  // const GF_PHONE_NUMBER = 'entry.1397485794'
+  // const GF_SIGNATURE = 'entry.2083580280'
+  // const GF_ROLE = 'entry.1542846730'
+  // const GF_ROLE_OTHER = 'entry.1542846730.other_option_response'
+  // const GF_GROUP = 'entry.406890529'
+  // const GF_GROUP_OTHER = 'entry.406890529.other_option_response'
+  // const GF_SYMPTOMS = 'entry.1254420812'
+  // const GF_EXPOSURES = 'entry.1995875531'
 
 
 
