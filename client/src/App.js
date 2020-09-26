@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import MaskedInput from "react-input-mask";
 import { Header, Form, Container, Checkbox, Modal, Button } from 'semantic-ui-react'
 
 function App(props) {
-
   //Hooks
   const [formError, setFormError] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
@@ -51,6 +50,23 @@ function App(props) {
     },
   })
 
+
+
+  const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1I_VgOZsdk0JbFIP6G7MKGU0GWnn2yYEVVZzaUZmQ4qRjcQ/formResponse'
+
+  const GF_FIRST_NAME = 'entry.1110557098'
+  const GF_LAST_NAME = 'entry.1857082831'
+  const GF_PHONE_NUMBER = 'entry.1397485794'
+  const GF_SIGNATURE = 'entry.2083580280'
+  const GF_ROLE = 'entry.1542846730'
+  const GF_ROLE_OTHER = 'entry.1542846730.other_option_response'
+  const GF_GROUP = 'entry.406890529'
+  const GF_GROUP_OTHER = 'entry.406890529.other_option_response'
+  const GF_SYMPTOMS = 'entry.1254420812'
+  const GF_EXPOSURES = 'entry.1995875531'
+
+
+
   //Dropdown Options
   const roleOptions = [
     { key: 's', text: 'Student', value: 'student' },
@@ -73,6 +89,10 @@ function App(props) {
 
   //Functionality 
 
+  useEffect( () => {
+    window.location = "https://docs.google.com/forms/d/e/1FAIpQLSc1I_VgOZsdk0JbFIP6G7MKGU0GWnn2yYEVVZzaUZmQ4qRjcQ/viewform?usp=sf_link";
+}, [])
+
   const handleChange = (e, data) => {
     const { name, value } = data || e.target
     let invalidValue = false
@@ -81,9 +101,9 @@ function App(props) {
       formDataCopy.flags[value] = !formDataCopy.flags[value]
       setFormData(formDataCopy)
     } else {
-      if (name === 'phoneNumber' && value[13] === '_' ) {
+      if (name === 'phoneNumber' && value[13] === '_') {
         invalidValue = true
-      } else if (value.length < 1){
+      } else if (value.length < 1) {
         invalidValue = true
       }
       setFormData({
@@ -123,12 +143,51 @@ function App(props) {
       && !group.error
       && !phoneNumber.error
       && !signature.error) {
-      console.log(formDataCopy)
       axios.post('https://rocky-falls-55370.herokuapp.com/send', formDataCopy)
       setFormError(false)
       setFormSubmitted(true)
-    } else  setFormError(true) 
+    } else setFormError(true)
   }
+
+  // const sendForm = () => {
+  //   const form = new FormData()
+  //   form.append(GF_FIRST_NAME, formData.firstName.value)
+  //   form.append(GF_LAST_NAME, formData.lastName.value)
+  //   form.append(GF_PHONE_NUMBER, formData.phoneNumber.value)
+  //   form.append(GF_SIGNATURE, formData.signature.value)
+  //   form.append(GF_ROLE, formData.role.value)
+  //   form.append(GF_ROLE_OTHER, formData.otherRole.value)
+  //   form.append(GF_GROUP, formData.group.value)
+  //   form.append(GF_SYMPTOMS, formData.firstName.value)
+  //   form.append(GF_EXPOSURES, formData.firstName.value)
+  //   axios.post(GOOGLE_FORM_ACTION, form)
+  // }
+
+  // $.ajax({
+  //   url: "https://docs.google.com/forms/d/e/1FAIpQLSfwwr_thxplsWYLLkeH1KiyId5KKvTDSfNnzPd3HTJm0Ee-lg/formResponse?",
+  //   data: {
+  //     'entry.1110557098':formData.firstName.value,
+  //     'entry.1857082831':formData.lastName.value,
+  //     'entry.1397485794':formData.phoneNumber.value,
+  //     'entry.2083580280':formData.signature.value,
+  //     'entry.1542846730':formData.role.value,
+  //     'entry.1542846730.other_option_response':formData.otherRole.value,
+  //     'entry.406890529':formData.group.value,
+  //     'entry.406890529.other_option_response':,
+  //     'entry.1254420812':formData.firstName.value,
+  //     'entry.1995875531':,
+  //   },
+  //   type: "POST",
+  //   dataType: "xml",
+  //   success: function (d) {
+  //   },
+  //   error: function (x, y, z) {
+
+  //     $('#success-msg').show();
+  //     $('#form').hide();
+
+  //   }
+  // })
 
 
   //Page Render
@@ -284,7 +343,7 @@ function App(props) {
           error={formError ? {
             content: 'Fill out all the required fields and try again.',
             pointing: 'left',
-          } : false }
+          } : false}
         />
         <Modal open={formSubmitted}>
           <Header icon='checked calendar' content='Thank You!' />
