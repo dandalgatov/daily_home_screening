@@ -45,7 +45,7 @@ app.post('/send', function (req, res) {
     communityTransmission ? 'NOT CLEAR' : 'CLEAR'
 
   try {
-    sgMail.setApiKey('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');
+    sgMail.setApiKey('');
     const msg = {
       to: 'rcs.covid.daily@gmail.com',
       from: 'rcs.covid.daily@gmail.com',

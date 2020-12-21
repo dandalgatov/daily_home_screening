@@ -141,7 +141,7 @@ function App(props) {
     const formDataCopy = { ...formData }
     const { firstName, lastName, role, otherRole, group, phoneNumber, signature } = formDataCopy
     const admin = formDataCopy.role.value === 'Admin'
-    const other = formDataCopy.role.value === 'Other'
+    const other = formDataCopy.role.value === '__other_option__'
 
     if (!firstName.value) formDataCopy.firstName.error = true
     if (!lastName.value) formDataCopy.lastName.error = true
